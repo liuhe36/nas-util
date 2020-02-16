@@ -13,7 +13,7 @@ RUN set -xe \
 			  bash \
 			  bash-doc \
 			  bash-completion \
-    && pip3 install youtube-dl
+    && pip3 install youtube-dl you-get
 
 WORKDIR /data
 
