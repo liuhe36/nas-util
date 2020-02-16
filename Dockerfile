@@ -17,5 +17,4 @@ RUN set -xe \
 
 WORKDIR /data
 
-ENTRYPOINT ["/bin/sh"]
-CMD [""]
+CMD ["/bin/sh"]
