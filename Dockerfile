@@ -18,4 +18,4 @@ RUN set -xe \
 WORKDIR /data
 
 ENTRYPOINT ["/bin/sh"]
-CMD ["--help"]
+CMD [""]
