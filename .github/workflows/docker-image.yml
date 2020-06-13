@@ -21,4 +21,4 @@ jobs:
         name: shadowdk/v2
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        dockerfile: v2-Dockerfile
+        dockerfile: /v2-Dockerfile
