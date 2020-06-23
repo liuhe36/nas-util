@@ -10,6 +10,7 @@ RUN set -xe \
                           ffmpeg \
                           openssl \
                           python3 \
+			  pip3 \
 			  bash \
 			  bash-doc \
 			  bash-completion \
