@@ -6,8 +6,12 @@ name: v2
 on:
   push:
     branches: [ master ]
+    paths: 
+      - v2-Dockerfile
   pull_request:
     branches: [ master ]
+    paths: 
+      - v2-Dockerfile
 
 jobs:
   build:
