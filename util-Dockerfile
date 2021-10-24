@@ -15,7 +15,7 @@ RUN set -xe \
 			  bash \
 			  bash-doc \
 			  bash-completion \
-    && pip3 install youtube-dl you-get
+    && pip3 install youtube-dl you-get && python3 -m pip install --upgrade yt-dlp
 
 WORKDIR /data
 
