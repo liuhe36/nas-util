@@ -8,6 +8,7 @@ MAINTAINER kev <noreply@easypi.pro1>
 RUN set -xe \
     && apk add --no-cache ca-certificates \
                           ffmpeg \
+			  gcc \
                           openssl \
                           python3 \
 			  python3-dev \
