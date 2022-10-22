@@ -2,7 +2,7 @@
 # Dockerfile for youtube-dl
 #
 
-FROM jlesage/baseimage-gui:ubuntu-22.04
+FROM jlesage/baseimage-gui:ubuntu-20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 MAINTAINER liu
@@ -16,9 +16,9 @@ RUN apt update && \
     apt clean
     
 RUN apt update && \
-    add-apt-repository ppa:yt-dlp/stable -y && \
-    apt update && \
-    apt install yt-dlp -y && \
+    apt install wget -y && \
+    curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \
+    chmod a+rx /usr/local/bin/yt-dlp && \
     apt clean
     
 ENV LIBVA_DRIVER_NAME=iHD
