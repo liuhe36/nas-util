@@ -2,22 +2,27 @@
 # Dockerfile for youtube-dl
 #
 
-FROM alpine
-MAINTAINER kev <noreply@easypi.pro1>
+FROM jlesage/baseimage-gui:ubuntu-20.04
 
-RUN set -xe \
-    && apk add --no-cache ca-certificates \
-                          ffmpeg \
-			  g++ \
-                          openssl \
-                          python3 \
-			  python3-dev \
-			  py3-pip \
-			  bash \
-			  bash-doc \
-			  bash-completion \
-    && pip3 install youtube-dl you-get && python3 -m pip install --upgrade yt-dlp
+ENV DEBIAN_FRONTEND=noninteractive
+MAINTAINER liu
+
+RUN apt update && \
+    apt install software-properties-common -y && \
+    add-apt-repository ppa:savoury1/ffmpeg5 -y && \
+    apt update && \
+    apt install libmfx1 libmfx-tools libva-drm2 libva-x11-2 libva-wayland2 libva-glx2 vainfo mesa-utils intel-media-va-driver-non-free -y && \
+    apt install mediainfo ffmpeg -y \
+    apt clean
+    
+RUN apt update && \
+    add-apt-repository ppa:yt-dlp/stable -y && \
+    apt update && \
+    apt install yt-dlp -y && \
+    apt clean
+    
+ENV LIBVA_DRIVER_NAME=iHD
 
 WORKDIR /data
-
+#COPY startapp.sh /startapp.sh
 CMD ["/bin/sh"]
