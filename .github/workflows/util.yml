@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run : echo "PROJECT_NAME=`expr $GITHUB_REPOSITORY ':' '[^/]*/\(.*\)'`" >> $GITHUB_ENV
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@master
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: ${{ secrets.DOCKER_USERNAME }}/${{env.PROJECT_NAME}}
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        dockerfile: Dockerfile
+        dockerfile: util-Dockerfile
