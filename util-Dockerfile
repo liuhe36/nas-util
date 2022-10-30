@@ -23,6 +23,7 @@ RUN apt update && \
     apt clean
     
 ENV LIBVA_DRIVER_NAME=iHD
+ENV LANG C.UTF-8
 
 WORKDIR /data
 #COPY startapp.sh /startapp.sh
