@@ -2,7 +2,7 @@
 # Dockerfile for youtube-dl
 #
 
-FROM jlesage/baseimage-gui:ubuntu-22.04
+FROM jlesage/baseimage-gui:ubuntu-22.04-v4
 
 ENV DEBIAN_FRONTEND=noninteractive
 MAINTAINER liu
