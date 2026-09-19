@@ -22,6 +22,11 @@ RUN curl -fL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_li
     unzip -o /tmp/deno.zip -d /usr/local/bin && rm /tmp/deno.zip && \
     yt-dlp --version && deno --version
 
+# dl / pdl / dla / pdla:只给链接就能下,说明见 util/ytdl
+COPY util/ytdl /usr/local/bin/ytdl
+RUN chmod 755 /usr/local/bin/ytdl && \
+    for c in dl pdl dla pdla; do ln -s ytdl /usr/local/bin/$c; done
+
 ENV LIBVA_DRIVER_NAME=iHD
 ENV LANG=C.UTF-8
 

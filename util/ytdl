@@ -1,0 +1,63 @@
+#!/bin/sh
+# 只给链接就能下,链接可以给多个,后面还能跟任何 yt-dlp 参数:
+#   dl   链接   最高画质 + 最佳音质,直连(B 站等国内站)
+#   pdl  链接   同上,走代理(YouTube 等)
+#   dla  链接   只要音频,直连
+#   pdla 链接   只要音频,走代理
+# 存到 /data/web-DL/<站点>/,播放列表和合集再建一层子目录。
+# 下载在后台跑,关掉终端或 Ctrl+C 都不会中断;要停就 pkill yt-dlp。
+
+name=$(basename "$0")
+if [ $# -eq 0 ]; then
+    sed -n '2,8s/^# //p' "$0"
+    exit 1
+fi
+
+case $name in
+p*)
+    if [ -z "$YTDLP_PROXY" ]; then
+        echo "没设 YTDLP_PROXY 环境变量,走不了代理" >&2
+        exit 1
+    fi
+    set -- --proxy "$YTDLP_PROXY" "$@"
+    ;;
+esac
+
+dir='/data/web-DL/%(site)s'
+file='%(playlist_title|)s/%(title)s [%(id)s].%(ext)s'
+case $name in
+*a)
+    set -- -f 'ba/b' -x -o "$dir/audio/$file" "$@"
+    ;;
+*)
+    # 最高分辨率里挑视频码率最高的:默认会挑 AV1,但 B 站的 AV1 码率只有 AVC 的四分之一,
+    # 9 代核显也解不了 AV1。只按视频码率排,音频仍按 yt-dlp 默认规则挑
+    set -- -S res,fps,hdr:12,vbr -o "$dir/$file" "$@"
+    ;;
+esac
+
+# 目录名沿用 web-DL 里已有的 youtube / bilibili
+set -- --no-playlist --embed-metadata --newline --progress-delta 2 \
+    --parse-metadata '%(extractor)s:%(site)s' \
+    --replace-in-metadata site '(?i)^bili.*' bilibili \
+    --replace-in-metadata site '^youtube.*' youtube \
+    "$@"
+if [ -f /config/cookies.txt ]; then
+    set -- --cookies /config/cookies.txt "$@"
+fi
+
+mkdir -p /config/logs
+find /config/logs -name '*.log' -mtime +30 -delete 2>/dev/null
+log=/config/logs/$(date +%Y%m%d-%H%M%S)-$name.log
+
+# setsid 让 yt-dlp 脱离当前终端,终端关了它还在
+setsid yt-dlp "$@" >"$log" 2>&1 </dev/null &
+pid=$!
+echo "已开始下载,关掉窗口或 Ctrl+C 都不影响。日志: config/nas-util/logs/${log##*/}"
+tail -n +1 -f --pid=$pid "$log"
+if wait $pid; then
+    echo "== 下载完成"
+else
+    echo "== 下载失败,看上面的报错"
+    exit 1
+fi
