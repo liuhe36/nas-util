@@ -2,29 +2,28 @@
 # Dockerfile for youtube-dl
 #
 
-FROM jlesage/baseimage-gui:ubuntu-22.04-v4
+FROM jlesage/baseimage-gui:ubuntu-24.04-v4
 
 ENV DEBIAN_FRONTEND=noninteractive
-MAINTAINER liu
+LABEL maintainer="liu"
 
-RUN apt update && \
-    apt install software-properties-common -y && \
-    #add-apt-repository ppa:savoury1/ffmpeg4 -y && \
-    #add-apt-repository ppa:savoury1/ffmpeg5 -y && \
-    apt update && apt upgrade -y && apt dist-upgrade -y && \
-    #apt install libmfx1 libmfx-tools libva-drm2 libva-x11-2 libva-wayland2 libva-glx2 vainfo mesa-utils intel-media-va-driver-non-free -y && \
-    #apt install mediainfo ffmpeg -y && \
-    apt install ffmpeg -y && \
-    apt clean
-    
-RUN apt update && \
-    apt install curl wget vim -y && \
-    curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \
+# intel-media-va-driver-non-free: 开源版 iHD 在 9 代核显上没有 HEVC 编码和 QSV 编码,必须装完整版
+# libmfx1: 老 Media SDK 运行时,6~11 代核显走 QSV 靠它;libmfx-gen1.2: 11 代以后的核显
+# 用底包自带的 add-pkg 装:底包构建期没有用户组数据库,/var/log 也是指向 /config 的链接,
+# 直接 apt-get 会在 fontconfig/systemd 的安装脚本上失败
+RUN add-pkg ffmpeg mediainfo \
+        intel-media-va-driver-non-free libmfx1 libmfx-gen1.2 vainfo \
+        ca-certificates curl wget vim unzip
+
+# yt-dlp_linux 自带 python 和 EJS 脚本;下 YouTube 还需要 JS 运行时,官方推荐 deno
+RUN curl -fL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux -o /usr/local/bin/yt-dlp && \
     chmod a+rx /usr/local/bin/yt-dlp && \
-    apt clean
-    
-#ENV LIBVA_DRIVER_NAME=iHD
-ENV LANG C.UTF-8
+    curl -fL https://github.com/denoland/deno/releases/latest/download/deno-x86_64-unknown-linux-gnu.zip -o /tmp/deno.zip && \
+    unzip -o /tmp/deno.zip -d /usr/local/bin && rm /tmp/deno.zip && \
+    yt-dlp --version && deno --version
+
+ENV LIBVA_DRIVER_NAME=iHD
+ENV LANG=C.UTF-8
 
 WORKDIR /data
 #COPY startapp.sh /startapp.sh
